@@ -49,6 +49,11 @@ class Ball
         xPosition += ballSpeed * direction;
         return;
       }
+
+      void resetBall(){
+        xPosition=400;
+        yPosition=300;
+      }
 };
 
 
@@ -103,17 +108,18 @@ int main(int argc, char** argv)
   //create our text object to display score
   int score1=10, score2 = 20;
 
+
   //create sfml text to display score to player
-  sf::Text scoreText;
+  sf::Text scoreText; //updated during re-rendering
   scoreText.setFont(font); // font is a sf::Font
-  //TODO: Let the score be shown in number within string
   scoreText.setCharacterSize(24);
   scoreText.setFillColor(sf::Color::Red);
   scoreText.setStyle(sf::Text::Bold);
   scoreText.setPosition(250,0);
+  //initialize both players score @0
   int player1Score=0;
   int player2Score=0;
-  //std::string scoreString = "Player 1: " + player1Score + "    Player 2: " + player2Score;
+
 
 
 
@@ -155,7 +161,7 @@ int main(int argc, char** argv)
                         }
                       // up arrow: paddle up
                       if (Event.key.code == sf::Keyboard::Key::Up){
-                          std::cout << "Paddle moving up\n";
+                          //std::cout << "Paddle moving up\n";
                           myPaddle.moveUp();
                           //if we are at max height stay there
                           if (myPaddle.yPosition<0){
@@ -166,7 +172,7 @@ int main(int argc, char** argv)
 
                       // down arrow: paddle down
                       if (Event.key.code == sf::Keyboard::Key::Down){
-                          std::cout << "Paddle moving down\n";
+                          //std::cout << "Paddle moving down\n";
                           myPaddle.moveDown();
                           //if we are at min height stay there
                           if (myPaddle.yPosition>600){
@@ -199,11 +205,27 @@ int main(int argc, char** argv)
         // std::cout << myBall.xPosition;
         // std::cout << "./";
         if(myBall.xPosition<=0){
-          direction=direction*-1;
-          player2Score++;
+          int upperLim = myPaddle.yPosition-30;
+          int lowerLim = myPaddle.yPosition+30;
+
+          //if our ball is within the y of our paddle, we hit ball
+          if((myBall.yPosition>=myPaddle.yPosition)  &&
+             (myBall.yPosition<=(myPaddle.yPosition+myPaddle.ySize))){
+               std::cout << "HIT!\n";
+               direction=direction*-1;
+
+          } else { // else the player scores
+            startBallMovementFlag = 0; //disable ball movement
+            myBall.resetBall();
+            player2Score++;
+          }
+
+
+
+
         } else if (myBall.xPosition>=800){
           direction=direction*-1;
-          player1Score++;
+          //player1Score++;
         }
 
         redrawFlag=1; //We must signal our ball has moved
@@ -230,9 +252,9 @@ int main(int argc, char** argv)
       //#########################################
       //redraw the game view if logic has updated
       if (redrawFlag==1){
-        std::cout << "Drawing frame #:";
-        std::cout << frame;
-        std::cout << ".\n";
+        // std::cout << "Drawing frame #:";
+        // std::cout << frame;
+        // std::cout << ".\n";
 
         App.clear(sf::Color::Black); //clear screen for drawing
         //set positions of objects
