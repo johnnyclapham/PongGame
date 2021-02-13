@@ -21,7 +21,8 @@ class Paddle
       int ySize = 50; // paddle height
       int xSize = 10; // paddle width
 
-      int xPosition = 0; //x location
+      int xPositionOne = 0; //x location for player 1
+      int xPositionTwo = 790; //x location for player 2
       int yPosition = 300; //y location
 
       void moveUp()
@@ -81,12 +82,6 @@ int main(int argc, char** argv)
   App.clear(sf::Color::Blue); //start with a blue background (change later)
   App.display();
 
-
-  //Initialize a paddle object
-  Paddle myPaddle;
-  //Initialize a paddle object
-  Ball myBall;
-
   //set sound buffer for pong sound
   sf::SoundBuffer bufferpongshort;
   if (!bufferpongshort.loadFromFile("resources/pongshort2.wav")){
@@ -121,12 +116,27 @@ int main(int argc, char** argv)
   if (!font.loadFromFile("resources/ACETONE.ttf")){
     printf("\ngame closed\n");}
 
-  //create sfml rectangle with attributes of the myPaddle
-  sf::RectangleShape rectangle;
-  rectangle.setSize(sf::Vector2f(myPaddle.xSize, myPaddle.ySize));
-  rectangle.setFillColor(sf::Color::Red);
-  rectangle.setOutlineThickness(1);
-  rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
+
+  //Initialize a paddle object for player 1
+  Paddle paddlePlayer1;
+  //Initialize a paddle object for player 2
+  Paddle paddlePlayer2;
+  //Initialize a ball object
+  Ball myBall;
+
+  //create sfml rectangleOne with attributes of the paddlePlayer1
+  sf::RectangleShape rectangleOne;
+  rectangleOne.setSize(sf::Vector2f(paddlePlayer1.xSize, paddlePlayer1.ySize));
+  rectangleOne.setFillColor(sf::Color::Red);
+  rectangleOne.setOutlineThickness(1);
+  rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
+
+  //create sfml rectangleOne with attributes of the paddlePlayer2
+  sf::RectangleShape rectangleTwo;
+  rectangleTwo.setSize(sf::Vector2f(paddlePlayer2.xSize, paddlePlayer2.ySize));
+  rectangleTwo.setFillColor(sf::Color::Red);
+  rectangleTwo.setOutlineThickness(1);
+  rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
 
   //create sfml ball with attributes from the myBall object
   sf::CircleShape circle(myBall.radius);
@@ -156,7 +166,7 @@ int main(int argc, char** argv)
 
   sf::Clock clock;
   int frame = 0;
-  int speed = 6;
+  int speed = 3;
   int xDirection=speed;
   int yDirection=speed;
   int startBallMovementFlag=0;
@@ -198,25 +208,51 @@ int main(int argc, char** argv)
                           startBallMovementFlag = 1;
                           std::cout << "Space pressed! Ball should now move.\n";
                         }
-                    //update the rectangle position to be drawn in render
-                    //rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
+                    //update the rectangleOne position to be drawn in render
+                    //rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
               }
     }
     //###################END EVENT BLOCK#######################
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
+//8888888888888888888888888888888888888888888888888888888888888888888888888888
+//8888888888888888888 PADDLE MOVEMENT CODE 88888888888888888888888888888888888
+//8888888888888888888888888888888888888888888888888888888888888888888888888888
+      //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+      {
+               std::cout << "Paddle moving up\n";
+               paddlePlayer1.moveUp();
+               //if we are at max height stay there
+               if (paddlePlayer1.yPosition<0){paddlePlayer1.yPosition=0;}
+               //update rectangleOne position to render
+               rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
+               //signal render updated
+               redrawFlag=1;
+      }
+      //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
+      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+      {
+                std::cout << "Paddle moving down\n";
+                paddlePlayer1.moveDown();
+                //if we are at min height stay there
+                if (paddlePlayer1.yPosition>600){paddlePlayer1.yPosition=600;}
+                //update rectangleOne position to render
+                rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
+                //signal render updated
+                redrawFlag=1;
+      }
 
       //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
       {
                std::cout << "Paddle moving up\n";
-               myPaddle.moveUp();
+               paddlePlayer2.moveUp();
                //if we are at max height stay there
-               if (myPaddle.yPosition<0){myPaddle.yPosition=0;}
-               //update rectangle position to render
-               rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
+               if (paddlePlayer2.yPosition<0){paddlePlayer2.yPosition=0;}
+               //update rectangleOne position to render
+               rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
                //signal render updated
                redrawFlag=1;
       }
@@ -224,15 +260,17 @@ int main(int argc, char** argv)
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
       {
                 std::cout << "Paddle moving down\n";
-                myPaddle.moveDown();
+                paddlePlayer2.moveDown();
                 //if we are at min height stay there
-                if (myPaddle.yPosition>600){myPaddle.yPosition=600;}
-                //update rectangle position to render
-                rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
+                if (paddlePlayer2.yPosition>600){paddlePlayer2.yPosition=600;}
+                //update rectangleOne position to render
+                rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
                 //signal render updated
                 redrawFlag=1;
       }
-
+//8888888888888888888888888888888888888888888888888888888888888888888888888888
+//888888888888888888888 END PADDLE MOVEMENT CODE 88888888888888888888888888888
+//8888888888888888888888888888888888888888888888888888888888888888888888888888
 
 
       //!!!below is ball movement code
@@ -242,23 +280,37 @@ int main(int argc, char** argv)
         //!!!!if/else for left and right sides of court
         if(myBall.xPosition<=0){
                 //if our ball is within the y of our paddle, we hit ball
-                if((myBall.yPosition>=(myPaddle.yPosition-5))  &&
-                   (myBall.yPosition<=(myPaddle.yPosition+myPaddle.ySize+5))){
+                if((myBall.yPosition>=(paddlePlayer1.yPosition-10))  &&
+                   (myBall.yPosition<=(paddlePlayer1.yPosition+paddlePlayer1.ySize+10))){
                      std::cout << "HIT!\n";
                      xDirection=xDirection*-1;
                      pingshort.play();
+                     ballSpeed++;
 
                 } else { // else the player scores
                   startBallMovementFlag = 0; //disable ball movement
-                  myBall.resetBall();
-                  player2Score++;
-                  scoreshort.play();
+                  myBall.resetBall(); //reset the ball to middle of screen
+                  player2Score++; //increase the player score
+                  scoreshort.play(); //play our sound effect
+                  ballSpeed=1; //decrease back to default
                 }
 
         } else if (myBall.xPosition>=800){
-                xDirection=xDirection*-1;
-                pingshort.play();
-                //player1Score++;
+                //if our ball is within the y of our paddle, we hit ball
+                if((myBall.yPosition>=(paddlePlayer2.yPosition-10))  &&
+                   (myBall.yPosition<=(paddlePlayer2.yPosition+paddlePlayer2.ySize+10))){
+                     std::cout << "HIT!\n";
+                     xDirection=xDirection*-1;
+                     pingshort.play();
+                     ballSpeed++;
+
+                } else { // else the player scores
+                  startBallMovementFlag = 0; //disable ball movement
+                  myBall.resetBall(); //reset ball to middle of screen
+                  player1Score++; //increase player score
+                  scoreshort.play(); //play sound effect
+                  ballSpeed=1; //decrease back to default
+                }
         }
 
         //!!!!if/else for top and bottom sides of court
@@ -347,7 +399,8 @@ int main(int argc, char** argv)
         App.clear(sf::Color::Black); //clear screen for drawing
         //draw the objects
         App.draw(circle); //draw our myBall object
-        App.draw(rectangle); //draw our myPaddle object
+        App.draw(rectangleOne); //draw our paddlePlayer1 object
+        App.draw(rectangleTwo); //draw our paddlePlayer1 object
         App.draw(scoreText); //draw our score text
         //display our new rendered scene
         App.display();
