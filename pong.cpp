@@ -186,6 +186,8 @@ int main(int argc, char** argv)
                           startBallMovementFlag = 1;
                           std::cout << "Space pressed! Ball should now move.\n";
                         }
+                    //update the rectangle position to be drawn in render
+                    rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
               }
     }
     //###################END EVENT BLOCK#######################
@@ -227,7 +229,8 @@ int main(int argc, char** argv)
           direction=direction*-1;
           //player1Score++;
         }
-
+        //update circle position for our ball coordinates to render
+        circle.setPosition(myBall.xPosition, myBall.yPosition);
         redrawFlag=1; //We must signal our ball has moved
 
       }
@@ -235,7 +238,33 @@ int main(int argc, char** argv)
 
 
 
+      if(player1Score<11 && player2Score<11){
+        //set the score with updated values
+        std::string scoreString = "Player 1: " + std::to_string(player1Score) +
+                                  "    "       +
+                                  "Player 2: " + std::to_string(player2Score);
+                                  scoreText.setString(scoreString);
 
+
+      } else {
+        if (player1Score==11){
+          //player 1 wins
+          std::string scoreString = std::string("Player 1 wins with 11 points!\n")+
+                                    std::string("Press any key to restart game.\n")+
+                                    std::string("Press Esc. key to exit.");
+          scoreText.setString(scoreString);
+          player1Score=0;
+          player2Score=0;
+        } else {
+          //player 2 wins
+          std::string scoreString = std::string("Player 2 wins with 11 points!\n")+
+                                    std::string("Press any key to restart game.\n")+
+                                    std::string("Press Esc. key to exit.");
+          scoreText.setString(scoreString);
+          player1Score=0;
+          player2Score=0;
+        }
+      }
 
 
 
@@ -257,21 +286,10 @@ int main(int argc, char** argv)
         // std::cout << ".\n";
 
         App.clear(sf::Color::Black); //clear screen for drawing
-        //set positions of objects
-        rectangle.setPosition(myPaddle.xPosition, myPaddle.yPosition);
-        circle.setPosition(myBall.xPosition, myBall.yPosition);
-
         //draw the objects
         App.draw(circle); //draw our myBall object
         App.draw(rectangle); //draw our myPaddle object
-
-        //set the score with updated values
-        std::string scoreString = "Player 1: " + std::to_string(player1Score) +
-                                  "    "       +
-                                  "Player 2: " + std::to_string(player2Score);
-        scoreText.setString(scoreString);
         App.draw(scoreText); //draw our score text
-
         //display our new rendered scene
         App.display();
       }
