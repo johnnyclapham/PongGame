@@ -43,10 +43,11 @@ class Ball
       int xPosition = 100; //x location
       int yPosition = 100; //y location
 
-      void move(int direction, int ballSpeed){
+      void move(int xDirection,int yDirection, int ballSpeed){
         //direction should be +1 or -1
         //ballSpeed can be any number (default 1)
-        xPosition += ballSpeed * direction;
+        xPosition += ballSpeed * xDirection;
+        yPosition += ballSpeed * yDirection;
         return;
       }
 
@@ -125,7 +126,8 @@ int main(int argc, char** argv)
 
   sf::Clock clock;
   int frame = 0;
-  int direction=10;
+  int xDirection=3;
+  int yDirection=3;
   int startBallMovementFlag=0;
   int ballSpeed = 1;
 
@@ -202,38 +204,49 @@ int main(int argc, char** argv)
 
 
       if (startBallMovementFlag==1){ //if the game has started
-        myBall.move(direction,ballSpeed);
-        // std::cout << "Ball x: ";
-        // std::cout << myBall.xPosition;
+        myBall.move(xDirection,yDirection,ballSpeed);
+        // std::cout << "Ball y: ";
+        // std::cout << myBall.yPosition;
         // std::cout << "./";
+
+        //!!!!if/else for left and right sides of court
         if(myBall.xPosition<=0){
-          int upperLim = myPaddle.yPosition-30;
-          int lowerLim = myPaddle.yPosition+30;
+                //if our ball is within the y of our paddle, we hit ball
+                if((myBall.yPosition>=myPaddle.yPosition)  &&
+                   (myBall.yPosition<=(myPaddle.yPosition+myPaddle.ySize))){
+                     std::cout << "HIT!\n";
+                     xDirection=xDirection*-1;
 
-          //if our ball is within the y of our paddle, we hit ball
-          if((myBall.yPosition>=myPaddle.yPosition)  &&
-             (myBall.yPosition<=(myPaddle.yPosition+myPaddle.ySize))){
-               std::cout << "HIT!\n";
-               direction=direction*-1;
-
-          } else { // else the player scores
-            startBallMovementFlag = 0; //disable ball movement
-            myBall.resetBall();
-            player2Score++;
-          }
-
-
-
+                } else { // else the player scores
+                  startBallMovementFlag = 0; //disable ball movement
+                  myBall.resetBall();
+                  player2Score++;
+                }
 
         } else if (myBall.xPosition>=800){
-          direction=direction*-1;
-          //player1Score++;
+                xDirection=xDirection*-1;
+                //player1Score++;
         }
+
+        //!!!!if/else for top and bottom sides of court
+        if (myBall.yPosition<=0){
+                yDirection=yDirection*-1;
+
+        } else if (myBall.yPosition>=600){
+                yDirection=yDirection*-1;
+        }
+
+
+
         //update circle position for our ball coordinates to render
         circle.setPosition(myBall.xPosition, myBall.yPosition);
         redrawFlag=1; //We must signal our ball has moved
 
       }
+
+      // std::cout << "Ball y: ";
+      // std::cout << myBall.yPosition;
+      // std::cout << "./";
 
 
 
