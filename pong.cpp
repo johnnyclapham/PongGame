@@ -79,7 +79,7 @@ int main(int argc, char** argv)
           "Pong Game - SFML - By Johnny Clapham"
           ,sf::Style::Titlebar | sf::Style::Close);
 
-  App.clear(sf::Color::Blue); //start with a blue background (change later)
+  App.clear(sf::Color::Black); //start with a blue background (change later)
   App.display();
 
   //set sound buffer for pong sound
@@ -102,6 +102,14 @@ int main(int argc, char** argv)
     printf("\nscore sound failed\n");
     //error
   }
+
+  sf::Music music;
+  if (!music.openFromFile("resources/backgroundtheme.ogg")){
+    printf("\nscore sound failed\n");
+    //error
+  }
+
+
 
   sf::Sound pongshort;
   sf::Sound pingshort;
@@ -144,7 +152,7 @@ int main(int argc, char** argv)
   circle.setFillColor(sf::Color(255, 50, 50));
 
   //create our redraw flag
-  int redrawFlag;
+  int redrawFlag =1;
 
   //create our text object to display score
   int score1=10, score2 = 20;
@@ -173,21 +181,26 @@ int main(int argc, char** argv)
   int ballSpeed = 1;
 
 
+  music.play();
+
   //##########################
   //##########################
   //###start main game loop###
   while(App.isOpen())
   {
+
+
     frame+=1;
     App.setFramerateLimit(60);
     //sf::Time elapsed = clock.restart();
-    redrawFlag=0; //turn redraw flag off
+    //redrawFlag=0; //turn redraw flag off
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //##################EVENT BLOCK###########################
     // process events
     sf::Event Event;
     while(App.pollEvent(Event)){
+
               // Exit
               if(Event.type == sf::Event::Closed){
                 App.close();
@@ -197,6 +210,7 @@ int main(int argc, char** argv)
               // key pressed event
               if (Event.type == sf::Event::KeyPressed)
               {
+
                       // exit key: exit game
                       if (Event.key.code == sf::Keyboard::Key::Escape){
                           App.close();
@@ -207,6 +221,7 @@ int main(int argc, char** argv)
                       if (Event.key.code == sf::Keyboard::Key::Space){
                           startBallMovementFlag = 1;
                           std::cout << "Space pressed! Ball should now move.\n";
+                          music.stop();
                         }
                     //update the rectangleOne position to be drawn in render
                     //rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
@@ -237,7 +252,7 @@ int main(int argc, char** argv)
                 std::cout << "Paddle moving down\n";
                 paddlePlayer1.moveDown();
                 //if we are at min height stay there
-                if (paddlePlayer1.yPosition>600){paddlePlayer1.yPosition=600;}
+                if (paddlePlayer1.yPosition>550){paddlePlayer1.yPosition=550;}
                 //update rectangleOne position to render
                 rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
                 //signal render updated
@@ -262,7 +277,7 @@ int main(int argc, char** argv)
                 std::cout << "Paddle moving down\n";
                 paddlePlayer2.moveDown();
                 //if we are at min height stay there
-                if (paddlePlayer2.yPosition>600){paddlePlayer2.yPosition=600;}
+                if (paddlePlayer2.yPosition>550){paddlePlayer2.yPosition=550;}
                 //update rectangleOne position to render
                 rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
                 //signal render updated
@@ -278,14 +293,15 @@ int main(int argc, char** argv)
         myBall.move(xDirection,yDirection,ballSpeed);
 
         //!!!!if/else for left and right sides of court
-        if(myBall.xPosition<=0){
+        //we take into account paddle width (10) & ball radius (10) 20 padding
+        if(myBall.xPosition<=20){
                 //if our ball is within the y of our paddle, we hit ball
                 if((myBall.yPosition>=(paddlePlayer1.yPosition-10))  &&
                    (myBall.yPosition<=(paddlePlayer1.yPosition+paddlePlayer1.ySize+10))){
                      std::cout << "HIT!\n";
                      xDirection=xDirection*-1;
                      pingshort.play();
-                     ballSpeed++;
+                     ballSpeed+=0.5;
 
                 } else { // else the player scores
                   startBallMovementFlag = 0; //disable ball movement
@@ -294,15 +310,15 @@ int main(int argc, char** argv)
                   scoreshort.play(); //play our sound effect
                   ballSpeed=1; //decrease back to default
                 }
-
-        } else if (myBall.xPosition>=800){
+        //we take into account paddle width (10) & ball radius (10) 20 padding
+        } else if (myBall.xPosition>=780){
                 //if our ball is within the y of our paddle, we hit ball
                 if((myBall.yPosition>=(paddlePlayer2.yPosition-10))  &&
                    (myBall.yPosition<=(paddlePlayer2.yPosition+paddlePlayer2.ySize+10))){
                      std::cout << "HIT!\n";
                      xDirection=xDirection*-1;
                      pingshort.play();
-                     ballSpeed++;
+                     ballSpeed+=0.5;
 
                 } else { // else the player scores
                   startBallMovementFlag = 0; //disable ball movement
@@ -341,11 +357,9 @@ int main(int argc, char** argv)
         //set the score with updated values
         //if the game is fresh, show controls
         if(player1Score==0 && player2Score==0){
-          std::string scoreString = "Player 1: " + std::to_string(player1Score) +
-                                    "    "       +
-                                    "Player 2: " + std::to_string(player2Score) +
-                                    "\nPress spacebar to release ball\n"+
-                                    "Press up/ down arrows to move paddle.";
+          std::string scoreString = std::string("New Game Started!\n\nControls:\n")+
+                                    std::string("Release Ball: Spacebar.\n")+
+                                    std::string("Movement: W/S & Up/Down");
                                     scoreText.setString(scoreString);
         } else {
           std::string scoreString = "Player 1: " + std::to_string(player1Score) +
@@ -412,6 +426,7 @@ int main(int argc, char** argv)
       // std::cout << frame;
       // std::cout << ".\n";
       sf::sleep(sf::milliseconds(1));
+      redrawFlag=0; //turn off render fag again
 
 
 
