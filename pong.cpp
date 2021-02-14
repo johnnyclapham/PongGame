@@ -41,6 +41,7 @@ class Paddle
 class Ball
 {
    public:
+      unsigned int Seed = 10; //seed for random perturbation
       int radius = 10; // circle radius
 
       int xPosition = 100; //x location
@@ -59,13 +60,6 @@ class Ball
         yPosition=300;
       }
 };
-
-
-
-
-
-
-
 
 
 
@@ -125,9 +119,8 @@ int main(int argc, char** argv)
     printf("\ngame closed\n");}
 
 
-  //Initialize a paddle object for player 1
+  //Initialize a paddle object for player 1 & 2
   Paddle paddlePlayer1;
-  //Initialize a paddle object for player 2
   Paddle paddlePlayer2;
   //Initialize a ball object
   Ball myBall;
@@ -152,7 +145,7 @@ int main(int argc, char** argv)
   circle.setFillColor(sf::Color(255, 50, 50));
 
   //create our redraw flag
-  int redrawFlag =1;
+  int redrawFlag =0;
 
   //create our text object to display score
   int score1=10, score2 = 20;
@@ -165,20 +158,34 @@ int main(int argc, char** argv)
   scoreText.setFillColor(sf::Color::Green);
   scoreText.setStyle(sf::Text::Bold);
   scoreText.setPosition(250,0);
-  //initialize both players score @0
-  int player1Score=0;
-  int player2Score=0;
 
+  //create sfml text to display score to player
+  sf::Text modeText; //updated during re-rendering
+  modeText.setFont(font); // font is a sf::Font
+  modeText.setCharacterSize(24);
+  modeText.setFillColor(sf::Color::Green);
+  modeText.setStyle(sf::Text::Bold);
+  modeText.setPosition(250,530);
+
+
+
+
+  //initialize both players score @-1
+  //(will be set to 0 when game starts)
+  int player1Score=-1;
+  int player2Score=-1;
 
 
 
   sf::Clock clock;
   int frame = 0;
-  int speed = 3;
-  int xDirection=speed;
-  int yDirection=speed;
+  //int speed = 3;
+  int xDirection=1;
+  int yDirection=1;
   int startBallMovementFlag=0;
-  int ballSpeed = 1;
+  int ballSpeed = 3;
+  int multiplayerFlag=-1;
+  //int mode=1
 
 
   music.play();
@@ -221,10 +228,35 @@ int main(int argc, char** argv)
                       if (Event.key.code == sf::Keyboard::Key::Space){
                           startBallMovementFlag = 1;
                           std::cout << "Space pressed! Ball should now move.\n";
+                          //music.stop();
+                        }
+
+                      // down arrow: paddle down
+                      if (Event.key.code == sf::Keyboard::Key::P){
+                          std::cout << "Increasing ball speed.\n";
+                          ballSpeed++;
+                        }
+
+                      // down arrow: paddle down
+                      if (Event.key.code == sf::Keyboard::Key::O){
+                          std::cout << "Decreasing ball speed.\n";
+                          ballSpeed--;
+                        }
+
+                      // down arrow: paddle down
+                      if (Event.key.code == sf::Keyboard::Key::Enter){
+                          startBallMovementFlag = 1;
+                          std::cout << "Resetting player score to 1";
+                          player1Score=0;
+                          player2Score=0;
                           music.stop();
                         }
-                    //update the rectangleOne position to be drawn in render
-                    //rectangleOne.setPosition(paddlePlayer1.xPositionOne, paddlePlayer1.yPosition);
+
+                      // down arrow: paddle down
+                      if (Event.key.code == sf::Keyboard::Key::M){
+                          std::cout << "Multiplayer mode enabled!\n";
+                          multiplayerFlag = multiplayerFlag*-1;
+                        }
               }
     }
     //###################END EVENT BLOCK#######################
@@ -237,7 +269,7 @@ int main(int argc, char** argv)
       //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
       {
-               std::cout << "Paddle moving up\n";
+               //std::cout << "Paddle moving up\n";
                paddlePlayer1.moveUp();
                //if we are at max height stay there
                if (paddlePlayer1.yPosition<0){paddlePlayer1.yPosition=0;}
@@ -249,7 +281,7 @@ int main(int argc, char** argv)
       //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
       {
-                std::cout << "Paddle moving down\n";
+                //std::cout << "Paddle moving down\n";
                 paddlePlayer1.moveDown();
                 //if we are at min height stay there
                 if (paddlePlayer1.yPosition>550){paddlePlayer1.yPosition=550;}
@@ -259,30 +291,34 @@ int main(int argc, char** argv)
                 redrawFlag=1;
       }
 
-      //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-      {
-               std::cout << "Paddle moving up\n";
-               paddlePlayer2.moveUp();
-               //if we are at max height stay there
-               if (paddlePlayer2.yPosition<0){paddlePlayer2.yPosition=0;}
-               //update rectangleOne position to render
-               rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
-               //signal render updated
-               redrawFlag=1;
+      if (multiplayerFlag==1){ // if multiplayer enabled we have two paddle movement
+                //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                {
+                         //std::cout << "Paddle moving up\n";
+                         paddlePlayer2.moveUp();
+                         //if we are at max height stay there
+                         if (paddlePlayer2.yPosition<0){paddlePlayer2.yPosition=0;}
+                         //update rectangleOne position to render
+                         rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
+                         //signal render updated
+                         redrawFlag=1;
+                }
+                //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                {
+                          //std::cout << "Paddle moving down\n";
+                          paddlePlayer2.moveDown();
+                          //if we are at min height stay there
+                          if (paddlePlayer2.yPosition>550){paddlePlayer2.yPosition=550;}
+                          //update rectangleOne position to render
+                          rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
+                          //signal render updated
+                          redrawFlag=1;
+                }
+
       }
-      //new iskeypressed methods ensure BUTTER SMOOTH paddle movement
-      else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-      {
-                std::cout << "Paddle moving down\n";
-                paddlePlayer2.moveDown();
-                //if we are at min height stay there
-                if (paddlePlayer2.yPosition>550){paddlePlayer2.yPosition=550;}
-                //update rectangleOne position to render
-                rectangleTwo.setPosition(paddlePlayer2.xPositionTwo, paddlePlayer2.yPosition);
-                //signal render updated
-                redrawFlag=1;
-      }
+
 //8888888888888888888888888888888888888888888888888888888888888888888888888888
 //888888888888888888888 END PADDLE MOVEMENT CODE 88888888888888888888888888888
 //8888888888888888888888888888888888888888888888888888888888888888888888888888
@@ -299,16 +335,16 @@ int main(int argc, char** argv)
                 if((myBall.yPosition>=(paddlePlayer1.yPosition-10))  &&
                    (myBall.yPosition<=(paddlePlayer1.yPosition+paddlePlayer1.ySize+10))){
                      std::cout << "HIT!\n";
-                     xDirection=xDirection*-1;
+                     xDirection=xDirection*-1; //reverse the direction of ball
                      pingshort.play();
-                     ballSpeed+=0.5;
+                     ballSpeed+=1; //increase the ball speed after each hit
 
                 } else { // else the player scores
                   startBallMovementFlag = 0; //disable ball movement
                   myBall.resetBall(); //reset the ball to middle of screen
                   player2Score++; //increase the player score
                   scoreshort.play(); //play our sound effect
-                  ballSpeed=1; //decrease back to default
+                  ballSpeed=3; //decrease back to default
                 }
         //we take into account paddle width (10) & ball radius (10) 20 padding
         } else if (myBall.xPosition>=780){
@@ -318,20 +354,20 @@ int main(int argc, char** argv)
                      std::cout << "HIT!\n";
                      xDirection=xDirection*-1;
                      pingshort.play();
-                     ballSpeed+=0.5;
+                     ballSpeed+=1;
 
                 } else { // else the player scores
                   startBallMovementFlag = 0; //disable ball movement
                   myBall.resetBall(); //reset ball to middle of screen
                   player1Score++; //increase player score
                   scoreshort.play(); //play sound effect
-                  ballSpeed=1; //decrease back to default
+                  ballSpeed=3; //decrease back to default
                 }
         }
 
         //!!!!if/else for top and bottom sides of court
         if (myBall.yPosition<=0){
-                yDirection=yDirection*-1;
+                yDirection=yDirection*-1;// reverse the y direction
                 pongshort.play();
 
         } else if (myBall.yPosition>=600){
@@ -341,54 +377,76 @@ int main(int argc, char** argv)
 
 
 
-        //update circle position for our ball coordinates to render
+        //update circle position logic for our ball coordinates to render
         circle.setPosition(myBall.xPosition, myBall.yPosition);
         redrawFlag=1; //We must signal our ball has moved
 
       }
-      // std::cout << "Ball y: ";
-      // std::cout << myBall.yPosition;
-      // std::cout << "./";
 
 
 
 
+      //if the score limit has not been reached
       if(player1Score<11 && player2Score<11){
         //set the score with updated values
         //if the game is fresh, show controls
-        if(player1Score==0 && player2Score==0){
-          std::string scoreString = std::string("New Game Started!\n\nControls:\n")+
-                                    std::string("Release Ball: Spacebar.\n")+
-                                    std::string("Movement: W/S & Up/Down");
-                                    scoreText.setString(scoreString);
-        } else {
+
+        if (player1Score>=0 && player2Score>=0) {//if the score is positive
           std::string scoreString = "Player 1: " + std::to_string(player1Score) +
                                     "    "       +
                                     "Player 2: " + std::to_string(player2Score);
                                     scoreText.setString(scoreString);
+        } else if (player1Score==-1 && player2Score==-1) {
+          //special condition for game controls etc.
+          std::string scoreString = std::string("Welcome to the Pong Game!\n")+
+                                    std::string("Created by Johnny C\n")+
+                                    std::string("\nControls:\n")+
+                                    std::string("Release Ball: Spacebar.\n")+
+                                    std::string("Movement: W/S & Up/Down\n")+
+                                    std::string("Change Speed: O/P\n")+
+                                    std::string("\nPress Enter to start game");
+                                    scoreText.setString(scoreString);
+
         }
 
-
-
-
-      } else {
+      } else { //if the score limit has been reached
         if (player1Score==11){
           //player 1 wins
           std::string scoreString = std::string("Player 1 wins with 11 points!\n")+
-                                    std::string("Press any key to restart game.\n")+
+                                    std::string("Press Enter to restart game.\n")+
                                     std::string("Press Esc. key to exit.");
           scoreText.setString(scoreString);
-          player1Score=0;
-          player2Score=0;
+          player1Score=-2;
+          player2Score=-2;
         } else {
           //player 2 wins
           std::string scoreString = std::string("Player 2 wins with 11 points!\n")+
-                                    std::string("Press any key to restart game.\n")+
+                                    std::string("Press Enter to restart game.\n")+
                                     std::string("Press Esc. key to exit.");
           scoreText.setString(scoreString);
-          player1Score=0;
-          player2Score=0;
+          player1Score=-2;
+          player2Score=-2;
         }
+      }
+
+
+
+      if (multiplayerFlag==-1){
+        std::string multiStatString = std::string("Ball Speed: Lvl.")+
+                                      std::to_string(ballSpeed-2)+
+                                      std::string("\nMode: Single Player (press m to change)");
+        modeText.setString(multiStatString);
+        redrawFlag=1;
+        paddlePlayer2.yPosition=myBall.yPosition-5;
+        rectangleTwo.setPosition(paddlePlayer2.xPositionTwo,paddlePlayer2.yPosition);
+
+      } else if (multiplayerFlag==1){
+        std::string multiStatString = std::string("Ball Speed: Lvl.")+
+                                      std::to_string(ballSpeed-2)+
+                                      std::string("\nMode: Multilayer (press m to change)");
+
+        modeText.setString(multiStatString);
+        redrawFlag=1;
       }
 
 
@@ -404,11 +462,8 @@ int main(int argc, char** argv)
       //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       //#############GAME VIEW###################
       //#########################################
-      //redraw the game view if logic has updated
+      //only redraw the game view if logic has updated
       if (redrawFlag==1){
-        // std::cout << "Drawing frame #:";
-        // std::cout << frame;
-        // std::cout << ".\n";
 
         App.clear(sf::Color::Black); //clear screen for drawing
         //draw the objects
@@ -416,17 +471,16 @@ int main(int argc, char** argv)
         App.draw(rectangleOne); //draw our paddlePlayer1 object
         App.draw(rectangleTwo); //draw our paddlePlayer1 object
         App.draw(scoreText); //draw our score text
+        App.draw(modeText); //draw our mode text
         //display our new rendered scene
         App.display();
       }
       //#########################################
       //############END GAME VIEW################
       //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      // std::cout << "Drawing frame #:";
-      // std::cout << frame;
-      // std::cout << ".\n";
+
       sf::sleep(sf::milliseconds(1));
-      redrawFlag=0; //turn off render fag again
+      redrawFlag=0; //turn off redraw fag again
 
 
 
