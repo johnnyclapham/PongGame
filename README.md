@@ -11,4 +11,6 @@ To change between singleplayer and multiplayer, press the m key
 
 To change Ball Speed level cycle between o/ p keys
 
+Hover over gif below to see it run:
+
 ![](examplerun.gif)
