@@ -22,8 +22,7 @@
 //      https://i.gyazo.com/2083139151c84afc500e6f3154a9bf8d.png
 
 //screenshot of file structure so that resources can be read on pong execution
-//      https://i.gyazo.com/6a58e4a104e722b597f98337b03f72b9.png
-
+//      https://i.gyazo.com/9e2904122156c1dd0ceb4f8b64fb122c.png
 
 
 
@@ -91,27 +90,27 @@ int main(int argc, char** argv)
 
   //set sound buffer for pong sound
   sf::SoundBuffer bufferpongshort;
-  if (!bufferpongshort.loadFromFile("resources/pongshort2.wav")){
+  if (!bufferpongshort.loadFromFile("../resources/pongshort2.wav")){
     printf("\npong sound failed\n");
     //error
   }
 
   //set sound buffer for ping sound
   sf::SoundBuffer bufferpingshort;
-  if (!bufferpingshort.loadFromFile("resources/pingshort.wav")){
+  if (!bufferpingshort.loadFromFile("../resources/pingshort.wav")){
     printf("\nping sound failed\n");
     //error
   }
 
   //set sound buffer for score sound
   sf::SoundBuffer bufferscoreshort;
-  if (!bufferscoreshort.loadFromFile("resources/scoreshort.wav")){
+  if (!bufferscoreshort.loadFromFile("../resources/scoreshort.wav")){
     printf("\nscore sound failed\n");
     //error
   }
 
   sf::Music music;
-  if (!music.openFromFile("resources/backgroundtheme.ogg")){
+  if (!music.openFromFile("../resources/backgroundtheme.ogg")){
     printf("\nscore sound failed\n");
     //error
   }
@@ -128,7 +127,7 @@ int main(int argc, char** argv)
 
   //Initialize our font
   sf::Font font;
-  if (!font.loadFromFile("resources/ACETONE.ttf")){
+  if (!font.loadFromFile("../resources/ACETONE.ttf")){
     printf("\ngame closed\n");}
 
 
@@ -267,7 +266,7 @@ int main(int argc, char** argv)
 
                       // down arrow: paddle down
                       if (Event.key.code == sf::Keyboard::Key::M){
-                          std::cout << "Multiplayer mode enabled!\n";
+                          std::cout << "Mode changed!\n";
                           multiplayerFlag = multiplayerFlag*-1;
                         }
               }
