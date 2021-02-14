@@ -13,6 +13,18 @@
 //   eg. (pong/debug/resources)
 //   run ./pong
 
+//screenshots of how game should look with resource folder set up
+// main menu:
+//      https://i.gyazo.com/536e5c0134b96445665437f58f9741d1.png
+// mid-game:
+//      https://i.gyazo.com/5fdcbd1545d8ecbf4b83e7286ae335c3.png
+//player wins:
+//      https://i.gyazo.com/2083139151c84afc500e6f3154a9bf8d.png
+
+//screenshot of file structure so that resources can be read on pong execution
+//      https://i.gyazo.com/6a58e4a104e722b597f98337b03f72b9.png
+
+
 
 
 
