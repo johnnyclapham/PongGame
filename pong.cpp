@@ -1,16 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <iostream>
-#include <string>
-#include <stdlib.h>
+#include <iostream> // for std:cout
 
 // simple pong paddle game for c++
 // created for cs437 game design
 // @author Johnny Clapham
-// to compile:
-//   put cpp in bin
-//   cmake ..
-//   cd debug
+// to compile using cmake:
+//   put cpp file in bin
+//   create folder debug in pong directory
+//   run cmake ..
+//   put resources folder in SAME directory as executable generated
+//   eg. (pong/debug/resources)
+//   run ./pong
 
 
 
