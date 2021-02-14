@@ -456,7 +456,7 @@ int main(int argc, char** argv)
       } else if (multiplayerFlag==1){
         std::string multiStatString = std::string("Ball Speed: Lvl.")+
                                       std::to_string(ballSpeed-2)+
-                                      std::string("\nMode: Multilayer (press m to change)");
+                                      std::string("\nMode: Multiplayer (press m to change)");
 
         modeText.setString(multiStatString);
         redrawFlag=1;
